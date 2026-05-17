@@ -54,6 +54,11 @@ export default function App() {
   const canvasRef = useRef(null)
   const imageRef = useRef(null)
   const editingPhotoIdRef = useRef(null)
+  const gallerySavedRef = useRef(false)
+
+  useEffect(() => {
+    gallerySavedRef.current = false
+  }, [rawImage])
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
@@ -110,18 +115,22 @@ export default function App() {
     setDeveloping(false)
     saveStreak({ ...streak, date: new Date().toISOString().split('T')[0] })
     setStreak(getStreak())
-    if (rawImage && processedUrl) {
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
-      editingPhotoIdRef.current = id
-      setPhotos(prev => [{
-        id,
-        dataUrl: processedUrl,
-        filter: activeFilter,
-        date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
-      }, ...prev])
-    }
-  }, [rawImage, processedUrl, activeFilter, streak])
+  }, [streak])
 
+  useEffect(() => {
+    console.log('gallery save check', { hasRaw: !!rawImage, hasProcessed: !!processedUrl, developing, gallerySaved: gallerySavedRef.current })
+    if (!rawImage || !processedUrl || developing || gallerySavedRef.current) return
+    console.log('gallery save triggered!')
+    gallerySavedRef.current = true
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+    editingPhotoIdRef.current = id
+    setPhotos(prev => [{
+      id,
+      dataUrl: processedUrl,
+      filter: activeFilter,
+      date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
+    }, ...prev])
+  }, [rawImage, processedUrl, developing, activeFilter])
   const updateCurrentPhoto = useCallback((dataUrl, filterKey) => {
     const id = editingPhotoIdRef.current
     if (!id) return
