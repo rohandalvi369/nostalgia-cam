@@ -287,7 +287,7 @@ function StringRow({ photos: rowPhotos, width, mouseRef, rowIndex, onPhotoSelect
   return (
     <div ref={rowRef} style={{
       position: 'relative', height: ROW_H, width: '100%',
-      overflow: 'hidden'
+      overflow: 'visible'
     }}>
       <canvas
         ref={canvasRef}
@@ -295,13 +295,17 @@ function StringRow({ photos: rowPhotos, width, mouseRef, rowIndex, onPhotoSelect
         height={ROW_H}
         style={{ position: 'absolute', left: 0, top: 0, width, height: ROW_H, pointerEvents: 'none', display: 'block' }}
       />
-      {rowPhotos.map(photo => (
+      {rowPhotos.map((photo, i) => {
+        const spacing = width / (rowPhotos.length + 1)
+        const initialX = spacing * (i + 1) - PHOTO_W / 2
+        return (
         <div
           key={photo.id}
           ref={el => { if (el) photoRefs.current[photo.id] = el }}
           onClick={() => onPhotoSelect?.(photo)}
           style={{
             position: 'absolute', top: 0, left: 0,
+            transform: `translate(${initialX}px, 28px)`,
             width: PHOTO_W,
             background: 'var(--bg-card)',
             border: '3px solid var(--line)',
@@ -381,7 +385,8 @@ function StringRow({ photos: rowPhotos, width, mouseRef, rowIndex, onPhotoSelect
             {photo.date || '01.01.07'}
           </div>
         </div>
-      ))}
+      )
+    })}
     </div>
   )
 }
