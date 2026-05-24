@@ -118,9 +118,7 @@ export default function App() {
   }, [streak])
 
   useEffect(() => {
-    console.log('gallery save check', { hasRaw: !!rawImage, hasProcessed: !!processedUrl, developing, gallerySaved: gallerySavedRef.current })
     if (!rawImage || !processedUrl || developing || gallerySavedRef.current) return
-    console.log('gallery save triggered!')
     gallerySavedRef.current = true
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
     editingPhotoIdRef.current = id
